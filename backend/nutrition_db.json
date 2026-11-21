@@ -1,0 +1,177 @@
+{
+  "aloo_gobi": {
+    "calories": 165,
+    "protein_g": 3.8,
+    "carbs_g": 22.0,
+    "fat_g": 7.5,
+    "serving_size": "1 cup (200 g)"
+  },
+  "aloo_matar": {
+    "calories": 180,
+    "protein_g": 4.5,
+    "carbs_g": 26.0,
+    "fat_g": 7.0,
+    "serving_size": "1 cup (200 g)"
+  },
+  "biryani": {
+    "calories": 360,
+    "protein_g": 14.5,
+    "carbs_g": 45.0,
+    "fat_g": 13.5,
+    "serving_size": "1 plate (300 g)"
+  },
+  "butter_chicken": {
+    "calories": 380,
+    "protein_g": 24.0,
+    "carbs_g": 11.0,
+    "fat_g": 26.0,
+    "serving_size": "1 cup (240 g)"
+  },
+  "chana_masala": {
+    "calories": 280,
+    "protein_g": 10.5,
+    "carbs_g": 40.0,
+    "fat_g": 8.5,
+    "serving_size": "1 cup (220 g)"
+  },
+  "chapati": {
+    "calories": 104,
+    "protein_g": 3.1,
+    "carbs_g": 20.0,
+    "fat_g": 1.5,
+    "serving_size": "1 piece (40 g)"
+  },
+  "chicken_curry": {
+    "calories": 243,
+    "protein_g": 19.0,
+    "carbs_g": 12.5,
+    "fat_g": 14.0,
+    "serving_size": "1 cup (235 g)"
+  },
+  "dal_makhani": {
+    "calories": 310,
+    "protein_g": 11.0,
+    "carbs_g": 32.0,
+    "fat_g": 15.0,
+    "serving_size": "1 cup (230 g)"
+  },
+  "dal_tadka": {
+    "calories": 195,
+    "protein_g": 9.5,
+    "carbs_g": 28.0,
+    "fat_g": 5.5,
+    "serving_size": "1 cup (220 g)"
+  },
+  "dumplings": {
+    "calories": 210,
+    "protein_g": 8.5,
+    "carbs_g": 26.0,
+    "fat_g": 7.5,
+    "serving_size": "4 pieces (120 g)"
+  },
+  "french_fries": {
+    "calories": 312,
+    "protein_g": 3.4,
+    "carbs_g": 41.0,
+    "fat_g": 15.0,
+    "serving_size": "1 medium serving (117 g)"
+  },
+  "fried_rice": {
+    "calories": 238,
+    "protein_g": 5.5,
+    "carbs_g": 34.0,
+    "fat_g": 8.8,
+    "serving_size": "1 cup (200 g)"
+  },
+  "gulab_jamun": {
+    "calories": 295,
+    "protein_g": 4.2,
+    "carbs_g": 48.0,
+    "fat_g": 10.0,
+    "serving_size": "2 pieces (90 g)"
+  },
+  "hamburger": {
+    "calories": 354,
+    "protein_g": 20.0,
+    "carbs_g": 29.0,
+    "fat_g": 17.0,
+    "serving_size": "1 burger (170 g)"
+  },
+  "ice_cream": {
+    "calories": 207,
+    "protein_g": 3.5,
+    "carbs_g": 24.0,
+    "fat_g": 11.0,
+    "serving_size": "1 scoop (132 g)"
+  },
+  "jalebi": {
+    "calories": 310,
+    "protein_g": 2.1,
+    "carbs_g": 62.0,
+    "fat_g": 6.8,
+    "serving_size": "3 pieces (100 g)"
+  },
+  "naan": {
+    "calories": 260,
+    "protein_g": 7.5,
+    "carbs_g": 45.0,
+    "fat_g": 5.0,
+    "serving_size": "1 piece (90 g)"
+  },
+  "omelette": {
+    "calories": 154,
+    "protein_g": 11.0,
+    "carbs_g": 1.6,
+    "fat_g": 12.0,
+    "serving_size": "1 omelette (2 eggs, 120 g)"
+  },
+  "palak_paneer": {
+    "calories": 275,
+    "protein_g": 12.0,
+    "carbs_g": 10.5,
+    "fat_g": 21.0,
+    "serving_size": "1 cup (225 g)"
+  },
+  "paneer_butter_masala": {
+    "calories": 360,
+    "protein_g": 13.5,
+    "carbs_g": 14.0,
+    "fat_g": 28.0,
+    "serving_size": "1 cup (230 g)"
+  },
+  "pizza": {
+    "calories": 266,
+    "protein_g": 11.0,
+    "carbs_g": 33.0,
+    "fat_g": 10.0,
+    "serving_size": "1 slice (107 g)"
+  },
+  "poha": {
+    "calories": 215,
+    "protein_g": 4.0,
+    "carbs_g": 36.0,
+    "fat_g": 6.5,
+    "serving_size": "1 plate (180 g)"
+  },
+  "ramen": {
+    "calories": 436,
+    "protein_g": 17.0,
+    "carbs_g": 56.0,
+    "fat_g": 16.0,
+    "serving_size": "1 bowl (480 g)"
+  },
+  "rasgulla": {
+    "calories": 210,
+    "protein_g": 4.0,
+    "carbs_g": 42.0,
+    "fat_g": 2.8,
+    "serving_size": "2 pieces (100 g)"
+  },
+  "samosa": {
+    "calories": 262,
+    "protein_g": 5.0,
+    "carbs_g": 28.0,
+    "fat_g": 14.5,
+    "serving_size": "2 pieces (100 g)"
+  }
+}
