@@ -243,6 +243,89 @@ h1{
 .hud-macro-item{display:flex;align-items:center;gap:.3rem}
 .hud-action-bar{display:flex;gap:.6rem}
 
+/* ───────────────────────────── Image Cropper Modal ───────────────────── */
+.crop-modal{
+  position:fixed;inset:0;background:rgba(10,8,14,.97);z-index:210;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:calc(1rem + var(--sat)) calc(1rem + var(--sar)) calc(1.2rem + var(--sab)) calc(1rem + var(--sal));
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  animation:zoomFade .25s var(--ease-out-expo);
+  touch-action:none;user-select:none;
+}
+.crop-modal.hidden{display:none}
+
+.crop-topbar{
+  display:flex;justify-content:space-between;align-items:center;width:100%;
+}
+.crop-title{
+  font-size:1.05rem;font-weight:800;color:var(--text);
+  display:inline-flex;align-items:center;gap:.4rem;
+}
+.crop-hint{
+  font-size:.78rem;color:var(--muted);text-align:center;margin:.25rem 0 .45rem;
+}
+
+.crop-stage-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;min-height:220px;width:100%;
+  border-radius:18px;background:rgba(0,0,0,.6);
+  border:1px solid var(--border);
+}
+.crop-stage{
+  position:relative;display:inline-block;overflow:hidden;
+  line-height:0;touch-action:none;
+}
+.crop-stage img{
+  max-width:100%;max-height:52dvh;display:block;
+  user-select:none;-webkit-user-drag:none;pointer-events:none;
+}
+.crop-overlay{
+  position:absolute;inset:0;overflow:hidden;pointer-events:auto;touch-action:none;
+}
+.crop-box{
+  position:absolute;box-sizing:border-box;
+  border:2.5px solid var(--accent);
+  box-shadow:0 0 0 9999px rgba(10,8,14,.78);
+  cursor:move;pointer-events:auto;touch-action:none;
+}
+.crop-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.2) 1px, transparent 1px);
+  background-size:33.333% 33.333%;
+}
+.crop-handle{
+  position:absolute;width:26px;height:26px;border-radius:50%;
+  background:#fff;border:3px solid var(--accent);
+  box-shadow:0 3px 10px rgba(0,0,0,.6);
+  pointer-events:auto;touch-action:none;
+}
+.crop-handle-tl{top:-13px;left:-13px;cursor:nwse-resize}
+.crop-handle-tr{top:-13px;right:-13px;cursor:nesw-resize}
+.crop-handle-bl{bottom:-13px;left:-13px;cursor:nesw-resize}
+.crop-handle-br{bottom:-13px;right:-13px;cursor:nwse-resize}
+
+.crop-toolbar{
+  width:100%;display:flex;flex-direction:column;gap:.65rem;margin-top:.75rem;
+}
+.crop-presets{
+  display:flex;justify-content:center;gap:.5rem;
+}
+.crop-preset-btn{
+  min-height:36px;padding:.35rem .85rem;border-radius:10px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--muted);font-size:.78rem;font-weight:700;
+  cursor:pointer;transition:all .15s ease;
+}
+.crop-preset-btn.active{
+  background:rgba(255,107,53,.22);border-color:rgba(255,107,53,.5);color:#fff;
+}
+.crop-preset-btn:active{transform:scale(.96)}
+.crop-actions{
+  display:flex;gap:.65rem;width:100%;
+}
+
 /* ───────────────────────────── Static Preview ────────────────────────── */
 .preview{
   width:100%;border-radius:var(--radius);overflow:hidden;
@@ -257,7 +340,7 @@ h1{
   object-fit:cover;display:block;
 }
 .preview .actions{
-  display:flex;gap:.7rem;padding:.85rem 1rem;
+  display:flex;gap:.55rem;padding:.85rem 1rem;
   background:rgba(15,13,19,.85);backdrop-filter:blur(20px);
   -webkit-backdrop-filter:blur(20px);
 }
@@ -265,10 +348,10 @@ h1{
 
 /* ───────────────────────────── Buttons ───────────────────────────────── */
 .btn{
-  min-height:48px;padding:.75rem 1.35rem;border:none;border-radius:14px;
-  font-size:.92rem;font-weight:700;cursor:pointer;transition:all .18s;
-  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
-  user-select:none;touch-action:manipulation;
+  min-height:48px;padding:.75rem 1.15rem;border:none;border-radius:14px;
+  font-size:.9rem;font-weight:700;cursor:pointer;transition:all .18s;
+  display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  user-select:none;touch-action:manipulation;white-space:nowrap;
 }
 .btn:active{transform:scale(.96)}
 .btn-primary{
@@ -476,6 +559,7 @@ h1{
   <div class="preview hidden" id="preview">
     <img id="previewImg" alt="Food preview" />
     <div class="actions">
+      <button type="button" class="btn btn-ghost" id="cropBtn" title="Crop & focus on food">✂️ Crop</button>
       <button type="button" class="btn btn-ghost" id="clearBtn">✕ Retake</button>
       <button type="button" class="btn btn-primary" id="classifyBtn">🔍 Analyze</button>
     </div>
@@ -514,6 +598,47 @@ h1{
       </div>
     </div>
     <div id="cards"></div>
+  </div>
+</div>
+
+<!-- ── Interactive Image Cropper Modal ──────────────────────────────── -->
+<div class="crop-modal hidden" id="cropModal">
+  <div class="crop-topbar">
+    <div class="crop-title">
+      <span>✂️</span> Crop &amp; Focus on Dish
+    </div>
+    <button type="button" class="icon-btn" id="btnCancelCrop" title="Cancel">✕</button>
+  </div>
+
+  <div class="crop-hint">Adjust corners to isolate food and discard background clutter</div>
+
+  <div class="crop-stage-wrap" id="cropStageWrap">
+    <div class="crop-stage" id="cropStage">
+      <img id="cropImg" alt="Crop target" draggable="false" />
+      <div class="crop-overlay" id="cropOverlay">
+        <div class="crop-box" id="cropBox">
+          <div class="crop-grid"></div>
+          <div class="crop-handle crop-handle-tl" data-handle="tl"></div>
+          <div class="crop-handle crop-handle-tr" data-handle="tr"></div>
+          <div class="crop-handle crop-handle-bl" data-handle="bl"></div>
+          <div class="crop-handle crop-handle-br" data-handle="br"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Crop Controls Toolbar -->
+  <div class="crop-toolbar">
+    <div class="crop-presets">
+      <button type="button" class="crop-preset-btn active" id="btnAspectSquare">1:1 Square</button>
+      <button type="button" class="crop-preset-btn" id="btnAspectFree">Freeform</button>
+      <button type="button" class="crop-preset-btn" id="btnResetCrop">↺ Center</button>
+    </div>
+
+    <div class="crop-actions">
+      <button type="button" class="btn btn-ghost" id="btnSkipCrop">Skip</button>
+      <button type="button" class="btn btn-primary" id="btnApplyCrop">✓ Done</button>
+    </div>
   </div>
 </div>
 
@@ -606,6 +731,7 @@ const btnSnap      = document.getElementById("btnSnap");
 const btnUpload    = document.getElementById("btnUpload");
 const preview      = document.getElementById("preview");
 const previewImg   = document.getElementById("previewImg");
+const cropBtn      = document.getElementById("cropBtn");
 const clearBtn     = document.getElementById("clearBtn");
 const classifyBtn  = document.getElementById("classifyBtn");
 const loader       = document.getElementById("loader");
@@ -614,6 +740,19 @@ const resultsDiv   = document.getElementById("results");
 const cardsDiv     = document.getElementById("cards");
 const portionTrack = document.getElementById("portionTrack");
 const pill         = document.getElementById("pill");
+
+// Cropper modal elements
+const cropModal        = document.getElementById("cropModal");
+const cropStage        = document.getElementById("cropStage");
+const cropImg          = document.getElementById("cropImg");
+const cropOverlay      = document.getElementById("cropOverlay");
+const cropBox          = document.getElementById("cropBox");
+const btnAspectSquare  = document.getElementById("btnAspectSquare");
+const btnAspectFree    = document.getElementById("btnAspectFree");
+const btnResetCrop     = document.getElementById("btnResetCrop");
+const btnCancelCrop    = document.getElementById("btnCancelCrop");
+const btnSkipCrop      = document.getElementById("btnSkipCrop");
+const btnApplyCrop     = document.getElementById("btnApplyCrop");
 
 // Scanner elements
 const btnLiveScanner    = document.getElementById("btnLiveScanner");
@@ -625,9 +764,10 @@ const btnFlipCamera     = document.getElementById("btnFlipCamera");
 const scannerHud        = document.getElementById("scannerHud");
 const scannerStatusText = document.getElementById("scannerStatusText");
 
-let selectedFile = null;
-let predictions  = [];
-let portionMult  = 1;
+let rawOriginalFile = null;
+let selectedFile    = null;
+let predictions     = [];
+let portionMult     = 1;
 const MEDALS = ["🥇","🥈","🥉"];
 
 // Live scanner state
@@ -636,6 +776,236 @@ let scanInterval = null;
 let isPredicting = false;
 let currentFacingMode = "environment";
 let latestScanPayload = null;
+
+// Cropper state
+let cropBoxX = 0;
+let cropBoxY = 0;
+let cropBoxW = 100;
+let cropBoxH = 100;
+let cropImgW = 0;
+let cropImgH = 0;
+let aspectMode = "square"; // "square" or "free"
+let isDraggingBox = false;
+let activeHandle = null;
+let dragStartX = 0;
+let dragStartY = 0;
+let snapBox = { x: 0, y: 0, w: 0, h: 0 };
+
+/* ══════════════════════════ Cropper Logic ═════════════════════════════ */
+function openCropper(file) {
+  rawOriginalFile = file;
+  const objectUrl = URL.createObjectURL(file);
+  cropImg.onload = () => {
+    // Measure rendered dimensions
+    cropImgW = cropImg.clientWidth;
+    cropImgH = cropImg.clientHeight;
+    initCropBox();
+    show(cropModal);
+    haptic(15);
+  };
+  cropImg.src = objectUrl;
+}
+
+function initCropBox() {
+  if (!cropImgW || !cropImgH) return;
+  const minDim = Math.min(cropImgW, cropImgH);
+  if (aspectMode === "square") {
+    const size = Math.round(minDim * 0.82);
+    cropBoxW = size;
+    cropBoxH = size;
+  } else {
+    cropBoxW = Math.round(cropImgW * 0.82);
+    cropBoxH = Math.round(cropImgH * 0.82);
+  }
+  cropBoxX = Math.round((cropImgW - cropBoxW) / 2);
+  cropBoxY = Math.round((cropImgH - cropBoxH) / 2);
+  renderCropBox();
+}
+
+function renderCropBox() {
+  cropBox.style.left = `${cropBoxX}px`;
+  cropBox.style.top = `${cropBoxY}px`;
+  cropBox.style.width = `${cropBoxW}px`;
+  cropBox.style.height = `${cropBoxH}px`;
+}
+
+// Aspect ratio toggles
+btnAspectSquare.addEventListener("click", () => {
+  haptic(12);
+  aspectMode = "square";
+  btnAspectSquare.classList.add("active");
+  btnAspectFree.classList.remove("active");
+  const size = Math.min(cropBoxW, cropBoxH);
+  cropBoxW = size;
+  cropBoxH = size;
+  cropBoxX = Math.min(cropBoxX, cropImgW - cropBoxW);
+  cropBoxY = Math.min(cropBoxY, cropImgH - cropBoxH);
+  renderCropBox();
+});
+
+btnAspectFree.addEventListener("click", () => {
+  haptic(12);
+  aspectMode = "free";
+  btnAspectFree.classList.add("active");
+  btnAspectSquare.classList.remove("active");
+});
+
+btnResetCrop.addEventListener("click", () => {
+  haptic(12);
+  initCropBox();
+});
+
+// Pointer drag interactions for box and corner handles
+cropOverlay.addEventListener("pointerdown", (e) => {
+  const handleTarget = e.target.closest(".crop-handle");
+  const boxTarget = e.target.closest(".crop-box");
+
+  if (handleTarget) {
+    activeHandle = handleTarget.dataset.handle;
+    isDraggingBox = false;
+  } else if (boxTarget) {
+    isDraggingBox = true;
+    activeHandle = null;
+  } else {
+    return;
+  }
+
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  snapBox = { x: cropBoxX, y: cropBoxY, w: cropBoxW, h: cropBoxH };
+  try { cropOverlay.setPointerCapture(e.pointerId); } catch (_) {}
+  e.preventDefault();
+});
+
+cropOverlay.addEventListener("pointermove", (e) => {
+  if (!isDraggingBox && !activeHandle) return;
+
+  const dx = e.clientX - dragStartX;
+  const dy = e.clientY - dragStartY;
+
+  if (isDraggingBox) {
+    let newX = snapBox.x + dx;
+    let newY = snapBox.y + dy;
+    newX = Math.max(0, Math.min(newX, cropImgW - cropBoxW));
+    newY = Math.max(0, Math.min(newY, cropImgH - cropBoxH));
+    cropBoxX = Math.round(newX);
+    cropBoxY = Math.round(newY);
+  } else if (activeHandle) {
+    const minSize = 44;
+
+    if (activeHandle === "br") {
+      let newW = snapBox.w + dx;
+      let newH = aspectMode === "square" ? newW : snapBox.h + dy;
+      newW = Math.max(minSize, Math.min(newW, cropImgW - snapBox.x));
+      newH = Math.max(minSize, Math.min(newH, cropImgH - snapBox.y));
+      if (aspectMode === "square") {
+        const side = Math.min(newW, newH);
+        newW = side; newH = side;
+      }
+      cropBoxW = Math.round(newW);
+      cropBoxH = Math.round(newH);
+    } else if (activeHandle === "tl") {
+      let delta = aspectMode === "square" ? Math.max(dx, dy) : dx;
+      let newW = snapBox.w - delta;
+      let newH = aspectMode === "square" ? newW : snapBox.h - dy;
+      if (newW >= minSize && snapBox.x + snapBox.w - newW >= 0 &&
+          newH >= minSize && snapBox.y + snapBox.h - newH >= 0) {
+        cropBoxX = Math.round(snapBox.x + snapBox.w - newW);
+        cropBoxY = Math.round(snapBox.y + snapBox.h - newH);
+        cropBoxW = Math.round(newW);
+        cropBoxH = Math.round(newH);
+      }
+    } else if (activeHandle === "tr") {
+      let newW = snapBox.w + dx;
+      let newH = aspectMode === "square" ? newW : snapBox.h - dy;
+      if (newW >= minSize && snapBox.x + newW <= cropImgW &&
+          newH >= minSize && snapBox.y + snapBox.h - newH >= 0) {
+        cropBoxY = Math.round(snapBox.y + snapBox.h - newH);
+        cropBoxW = Math.round(newW);
+        cropBoxH = Math.round(newH);
+      }
+    } else if (activeHandle === "bl") {
+      let newW = snapBox.w - dx;
+      let newH = aspectMode === "square" ? newW : snapBox.h + dy;
+      if (newW >= minSize && snapBox.x + snapBox.w - newW >= 0 &&
+          newH >= minSize && snapBox.y + newH <= cropImgH) {
+        cropBoxX = Math.round(snapBox.x + snapBox.w - newW);
+        cropBoxW = Math.round(newW);
+        cropBoxH = Math.round(newH);
+      }
+    }
+  }
+
+  renderCropBox();
+});
+
+const endPointerDrag = (e) => {
+  isDraggingBox = false;
+  activeHandle = null;
+  try { cropOverlay.releasePointerCapture(e.pointerId); } catch (_) {}
+};
+cropOverlay.addEventListener("pointerup", endPointerDrag);
+cropOverlay.addEventListener("pointercancel", endPointerDrag);
+
+// Apply cropped image
+btnApplyCrop.addEventListener("click", () => {
+  haptic(20);
+  if (!rawOriginalFile || !cropImg.naturalWidth) return;
+
+  const canvas = document.createElement("canvas");
+  const scaleX = cropImg.naturalWidth / cropImgW;
+  const scaleY = cropImg.naturalHeight / cropImgH;
+
+  const srcX = Math.round(cropBoxX * scaleX);
+  const srcY = Math.round(cropBoxY * scaleY);
+  const srcW = Math.round(cropBoxW * scaleX);
+  const srcH = Math.round(cropBoxH * scaleY);
+
+  canvas.width = srcW;
+  canvas.height = srcH;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(cropImg, srcX, srcY, srcW, srcH, 0, 0, srcW, srcH);
+
+  canvas.toBlob((blob) => {
+    if (!blob) return;
+    selectedFile = blob;
+    previewImg.src = URL.createObjectURL(blob);
+    hide(cropModal);
+    show(preview);
+    hide(dropWrap);
+    hideResults();
+  }, "image/jpeg", 0.92);
+});
+
+// Skip crop and use original full photo
+btnSkipCrop.addEventListener("click", () => {
+  haptic(10);
+  selectedFile = rawOriginalFile;
+  previewImg.src = URL.createObjectURL(rawOriginalFile);
+  hide(cropModal);
+  show(preview);
+  hide(dropWrap);
+  hideResults();
+});
+
+btnCancelCrop.addEventListener("click", () => {
+  haptic(10);
+  hide(cropModal);
+  if (!selectedFile) {
+    show(dropWrap);
+    hide(preview);
+  }
+});
+
+// Re-crop button in preview screen
+cropBtn.addEventListener("click", () => {
+  haptic(15);
+  if (rawOriginalFile) {
+    openCropper(rawOriginalFile);
+  } else if (selectedFile) {
+    openCropper(selectedFile);
+  }
+});
 
 /* ══════════════════════════ File Handling ════════════════════════════ */
 btnSnap.addEventListener("click", (e) => {
@@ -680,16 +1050,12 @@ function handleFile(f) {
   if (!["image/png","image/jpeg","image/webp"].includes(f.type)) {
     return alert("Please upload a PNG, JPEG, or WebP image.");
   }
-  selectedFile = f;
-  previewImg.src = URL.createObjectURL(f);
-  show(preview);
-  hide(dropWrap);
-  hideResults();
-  haptic(15);
+  openCropper(f);
 }
 
 clearBtn.addEventListener("click", () => {
   haptic(10);
+  rawOriginalFile = null;
   selectedFile = null;
   fileInput.value = "";
   cameraInput.value = "";
