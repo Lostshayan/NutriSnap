@@ -1,4 +1,4 @@
-const CACHE = "nutrisnap-v4";
+const CACHE = "nutrisnap-v5";
 const PRE_CACHE = [
   "/",
   "/manifest.json",
